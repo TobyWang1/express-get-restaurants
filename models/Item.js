@@ -1,24 +1,27 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 const db = require("../db/connection");
 
-class Restaurant extends Model {}
+class Item extends Model {}
 
-Restaurant.init(
+Item.init(
     {
         name: {
             type: DataTypes.STRING,
         },
-        location: {
+        image: {
             type: DataTypes.STRING,
         },
-        cuisine: {
-            type: DataTypes.STRING,
+        price: {
+            type: DataTypes.DECIMAL,
+        },
+        vegetarian: {
+            type: DataTypes.BOOLEAN,
         },
     },
     {
         sequelize: db,
-        modelName: "Restaurant",
+        modelName: "Item",
     }
 );
 
-module.exports = { Restaurant };
+module.exports = { Item };
