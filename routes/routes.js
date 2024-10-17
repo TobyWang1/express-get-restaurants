@@ -1,6 +1,7 @@
 // Define express router to be able to handle create, read, update, and delete operations for the restaurants resource
 const express = require('express');
 const router = express.Router();
+const { check, validationResult } = require('express-validator');
 
 // Import the Restaurant model
 const { Restaurant, Menu, Item } = require('../models/index');
@@ -41,21 +42,22 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/add', async (req, res) => {
-    try {
-        if (!req.body) {
-            return res.status(400).json({ message: "Request body is missing" });
-        }
+router.post('/add', [
+    check('name').notEmpty().trim().withMessage('Name is required'),
+    check('location').notEmpty().trim().withMessage('Location is required'),
+    check('cuisine').notEmpty().trim().withMessage('Cuisine is required')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
 
+    try {
         const restaurant = await Restaurant.create(req.body);
         res.status(201).json(restaurant);
     } catch (error) {
         console.error(error);
-        if (error instanceof ValidationError) {
-            res.status(400).json({ message: "Invalid restaurant data" });
-        } else {
-            res.status(500).json({ message: "Internal Server Error" });
-        }
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 

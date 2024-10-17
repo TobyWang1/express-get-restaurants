@@ -2,7 +2,7 @@
 const request = require('supertest');
 const app = require('./src/app');
 const db = require('./db/connection');
-const Restaurant = require('./models/Restaurant');
+const { Restaurant } = require('./models/Restaurant');
 
 beforeAll(async () => {
     await db.sync();
@@ -39,6 +39,21 @@ describe('Test the restaurant API', () => {
         expect(response.body.location).toBe('New York');
         expect(response.body.cuisine).toBe('Fast Food');
     });
+
+    test('POST /restaurants/add', async () => {
+        const response = await request(app)
+            .post('/restaurants/add')
+            .send({
+                name: '',
+                location: 'London',
+                cuisine: 'World'
+            });
+        expect(response.statusCode).toBe(400);
+
+        // Ensure that the error message includes the validation error for the 'name' field
+        expect(response.body.errors).toBeDefined();
+        expect(response.body.errors[0].msg).toBe('Name is required');
+    })
 
     test('PUT /restaurants/update/:id', async () => {
         const restaurant = await Restaurant.create({
