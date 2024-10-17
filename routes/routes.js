@@ -44,8 +44,9 @@ router.get('/:id', async (req, res) => {
 
 router.post('/add', [
     check('name').notEmpty().trim().withMessage('Name is required'),
+    check('name').isLength({ min:10, max:30 }).withMessage('Name should have 10-30 characters'),
     check('location').notEmpty().trim().withMessage('Location is required'),
-    check('cuisine').notEmpty().trim().withMessage('Cuisine is required')
+    check('cuisine').notEmpty().trim().withMessage('Cuisine is required'),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
